@@ -1,37 +1,39 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ============================================================
+# Node
+# ============================================================
+node_modules/
+npm-debug.log*
+.npm
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+# ============================================================
+# Environment (never commit real secrets)
+# ============================================================
+.env
+!.env.example
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# ============================================================
+# Vault storage (contains encrypted PII data)
+# ============================================================
+vault_storage/
+vault_storage_test/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# ============================================================
+# Build & coverage
+# ============================================================
+dist/
+coverage/
+*.lcov
+/build/
+
+# ============================================================
+# Flutter / Dart / Pub
+# ============================================================
 .dart_tool/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
-/coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
 
 # Symbolication related
 app.*.symbols
@@ -39,10 +41,63 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Widget Preview related
+.widget_preview/
+
+# ============================================================
+# Android
+# ============================================================
 /android/app/debug
 /android/app/profile
 /android/app/release
 
-# Widget Preview related
-.widget_preview/
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# IDE
+# ============================================================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+
+# IntelliJ / Android Studio
+.atom/
+
+# ============================================================
+# Swift / Xcode
+# ============================================================
+.swiftpm/
+**/xcuserdata/
+**/*.xcuserstate
+
+# ============================================================
+# Miscellaneous
+# ============================================================
+*.class
+*.pyc
+.build/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# ============================================================
+# Logs
+# ============================================================
+logs/
+*.log
+
+# ============================================================
+# Docker volumes
+# ============================================================
+postgres_data/
+mongo_data/
+redis_data/

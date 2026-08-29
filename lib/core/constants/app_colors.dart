@@ -13,6 +13,7 @@ class AppColors {
   static const Color teal = Color(0xFF3F9C94);
   static const Color gold = Color(0xFFC79A3D);
   static const Color purple = Color(0xFF6C5FBC);
+  static const Color orange = Color(0xFFC97A3D);
   static const Color errorRed = Color(0xFFD32F2F);
 
   static const Color cardBorder = Color(0xFFE7E4DD);
@@ -23,5 +24,6 @@ class AppColors {
   static const Color blueTint = Color(0xFFEAF0F8);
   static const Color goldTint = Color(0xFFFBF3E3);
   static const Color purpleTint = Color(0xFFEEECF9);
+  static const Color orangeTint = Color(0xFFFAEEE4);
   static const Color redTint = Color(0xFFFFEEEE);
 }

@@ -8,21 +8,49 @@ import '../models/consent_model.dart';
 /// methods for real calls (GET /consents, POST /consents/{id}/revoke,
 /// POST /consents/{id}/renew) without touching any caller.
 class ConsentRepository {
+  // Session-lifetime in-memory cache standing in for a backend — until a
+  // real API exists this is the single source of truth so a status change
+  // (revoke, renew, activate) is still there the next time the Consent
+  // Center is opened, instead of resetting to the demo baseline.
+  List<ConsentModel>? _cachedConsents;
+
   Future<List<ConsentModel>> getConsents() async {
     // TODO(backend): replace with GET /consents
     await Future.delayed(const Duration(milliseconds: 300));
-    return _demoConsents();
+    return _cachedConsents ??= _demoConsents();
   }
 
   Future<void> revokeConsent(String id) async {
     // TODO(backend): POST /consents/{id}/revoke
     await Future.delayed(const Duration(milliseconds: 400));
+    _mutate(id, (c) => c.copyWith(status: ConsentStatus.revoked));
   }
 
   Future<DateTime> renewConsent(String id) async {
     // TODO(backend): POST /consents/{id}/renew
     await Future.delayed(const Duration(milliseconds: 400));
-    return DateTime.now().add(const Duration(days: 30));
+    final newExpiry = DateTime.now().add(const Duration(days: 30));
+    _mutate(id, (c) => c.copyWith(status: ConsentStatus.active, expiryDate: newExpiry));
+    return newExpiry;
+  }
+
+  /// Marks a consent Active — used once a consent-granting flow (e.g. the
+  /// Financial Habits Assessment) completes.
+  ///
+  /// TEMPORARY: this only updates local in-memory state. It is not a
+  /// legally valid consent record until a real backend persists it —
+  /// replace with POST /consents/{id}/activate once that exists.
+  Future<void> activateConsent(String id, {required DateTime expiryDate}) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _mutate(id, (c) => c.copyWith(status: ConsentStatus.active, expiryDate: expiryDate));
+  }
+
+  void _mutate(String id, ConsentModel Function(ConsentModel) update) {
+    final current = _cachedConsents ?? _demoConsents();
+    _cachedConsents = [
+      for (final c in current)
+        if (c.id == id) update(c) else c,
+    ];
   }
 
   List<ConsentModel> _demoConsents() {

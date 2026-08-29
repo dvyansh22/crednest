@@ -54,7 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: const DashboardBottomNav(),
+      bottomNavigationBar: const DashboardBottomNav(currentIndex: 0),
       body: SafeArea(
         bottom: false,
         child: data == null

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../onboarding/presentation/data/onboarding_storage.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../../core/utils/post_auth_navigator.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -105,7 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
       final isAuthenticated = ref.read(authProvider).status == AuthStatus.authenticated;
       if (isAuthenticated) {
-        context.go('/dashboard');
+        await navigateAfterAuthentication(context, ref);
       } else {
         context.go('/login');
       }

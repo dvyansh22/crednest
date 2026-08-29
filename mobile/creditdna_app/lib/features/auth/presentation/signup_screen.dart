@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/auth_text_field.dart';
+import '../../../core/utils/post_auth_navigator.dart';
 import '../application/auth_provider.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (mounted) {
       final state = ref.read(authProvider);
       if (state.status == AuthStatus.authenticated) {
-        context.go('/dashboard');
+        await navigateAfterAuthentication(context, ref);
       } else if (state.status == AuthStatus.initial) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

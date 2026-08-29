@@ -70,6 +70,21 @@ class ConsentNotifier extends StateNotifier<ConsentState> {
       ],
     );
   }
+
+  /// Marks a consent Active — called by consent-granting flows elsewhere in
+  /// the app (e.g. the Financial Habits Assessment) once they complete.
+  Future<void> activateConsent(String id, {required DateTime expiryDate}) async {
+    await _repository.activateConsent(id, expiryDate: expiryDate);
+    if (state.consents.any((c) => c.id == id)) {
+      state = ConsentState(
+        status: ConsentLoadStatus.loaded,
+        consents: [
+          for (final c in state.consents)
+            if (c.id == id) c.copyWith(status: ConsentStatus.active, expiryDate: expiryDate) else c,
+        ],
+      );
+    }
+  }
 }
 
 final consentProvider = StateNotifierProvider<ConsentNotifier, ConsentState>((ref) {
