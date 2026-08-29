@@ -1,0 +1,17 @@
+﻿# Data files (large, regenerate with training scripts)
+backend/ml-service/data/dataset/*.csv
+backend/ml-service/app/models/*.joblib
+backend/ml-service/app/models/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# Env files
+.env
+
+backend/ml-service/data/*.xlsx
