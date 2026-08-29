@@ -1,0 +1,122 @@
+[
+  {
+    "id": "Q01",
+    "text": "When you face a financial setback, how do you typically respond?",
+    "options": [
+      { "value": 1, "label": "Panic and make impulsive decisions" },
+      { "value": 2, "label": "Wait and hope it resolves itself" },
+      { "value": 3, "label": "Seek advice from family/friends" },
+      { "value": 4, "label": "Create a structured plan to recover" }
+    ]
+  },
+  {
+    "id": "Q02",
+    "text": "How do you prioritize repayment when you have multiple financial obligations?",
+    "options": [
+      { "value": 1, "label": "I pay what I can, no fixed priority" },
+      { "value": 2, "label": "I pay the smallest debts first" },
+      { "value": 3, "label": "I pay the highest interest first" },
+      { "value": 4, "label": "I maintain a strict repayment schedule" }
+    ]
+  },
+  {
+    "id": "Q03",
+    "text": "How often do you track your business/personal income and expenses?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Occasionally" },
+      { "value": 3, "label": "Monthly" },
+      { "value": 4, "label": "Weekly or more frequently" }
+    ]
+  },
+  {
+    "id": "Q04",
+    "text": "If you received an unexpected windfall of ₹50,000, what would you do?",
+    "options": [
+      { "value": 1, "label": "Spend it on lifestyle upgrades" },
+      { "value": 2, "label": "Hold it as cash" },
+      { "value": 3, "label": "Split between savings and expenses" },
+      { "value": 4, "label": "Invest or repay existing debt" }
+    ]
+  },
+  {
+    "id": "Q05",
+    "text": "How do you feel about borrowing money from family or friends?",
+    "options": [
+      { "value": 1, "label": "Very comfortable — no issue" },
+      { "value": 2, "label": "Somewhat comfortable" },
+      { "value": 3, "label": "Uncomfortable, prefer formal channels" },
+      { "value": 4, "label": "Strongly prefer formal credit institutions" }
+    ]
+  },
+  {
+    "id": "Q06",
+    "text": "How would you rate your understanding of loan interest rates and EMI calculations?",
+    "options": [
+      { "value": 1, "label": "I don't understand them" },
+      { "value": 2, "label": "Basic understanding" },
+      { "value": 3, "label": "Good understanding" },
+      { "value": 4, "label": "Expert — I can calculate them myself" }
+    ]
+  },
+  {
+    "id": "Q07",
+    "text": "In the past year, how many times did you miss a payment deadline (bill, loan, or rent)?",
+    "options": [
+      { "value": 1, "label": "5 or more times" },
+      { "value": 2, "label": "3–4 times" },
+      { "value": 3, "label": "1–2 times" },
+      { "value": 4, "label": "Never" }
+    ]
+  },
+  {
+    "id": "Q08",
+    "text": "How do you typically fund a large business expense (e.g., new equipment)?",
+    "options": [
+      { "value": 1, "label": "I don't — I avoid large expenses" },
+      { "value": 2, "label": "Informal borrowing" },
+      { "value": 3, "label": "Business savings" },
+      { "value": 4, "label": "Planned credit / business loan" }
+    ]
+  },
+  {
+    "id": "Q09",
+    "text": "What is your primary goal for taking a loan right now?",
+    "options": [
+      { "value": 1, "label": "Cover personal consumption" },
+      { "value": 2, "label": "Cover an emergency" },
+      { "value": 3, "label": "Business working capital" },
+      { "value": 4, "label": "Business growth investment" }
+    ]
+  },
+  {
+    "id": "Q10",
+    "text": "How long does your business typically go between revenue inflows?",
+    "options": [
+      { "value": 1, "label": "Unpredictable / irregular" },
+      { "value": 2, "label": "Quarterly" },
+      { "value": 3, "label": "Monthly" },
+      { "value": 4, "label": "Weekly or more frequent" }
+    ]
+  },
+  {
+    "id": "Q11",
+    "text": "Do you maintain any form of financial records for your business?",
+    "options": [
+      { "value": 1, "label": "No records at all" },
+      { "value": 2, "label": "Basic notes/memory" },
+      { "value": 3, "label": "Spreadsheet or ledger book" },
+      { "value": 4, "label": "Accounting software or formal books" }
+    ]
+  },
+  {
+    "id": "Q12",
+    "text": "If your business had a very bad month, how many months could you sustain operations without external funding?",
+    "options": [
+      { "value": 1, "label": "Less than 1 month" },
+      { "value": 2, "label": "1–2 months" },
+      { "value": 3, "label": "3–6 months" },
+      { "value": 4, "label": "More than 6 months" }
+    ]
+  }
+]

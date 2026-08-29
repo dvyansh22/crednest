@@ -1,17 +1,111 @@
-﻿# Data files (large, regenerate with training scripts)
+# Data files (large, regenerate with training scripts)
 backend/ml-service/data/dataset/*.csv
 backend/ml-service/app/models/*.joblib
 backend/ml-service/app/models/*.csv
+backend/ml-service/data/*.xlsx
 
-# Python
-__pycache__/
+# ============================================================
+# Node
+# ============================================================
+node_modules/
+npm-debug.log*
+.npm
+
+# ============================================================
+# Environment (never commit real secrets)
+# ============================================================
+.env
+!.env.example
+
+# ============================================================
+# Vault storage (contains encrypted PII data)
+# ============================================================
+vault_storage/
+vault_storage_test/
+
+# ============================================================
+# Build & coverage
+# ============================================================
+dist/
+coverage/
+*.lcov
+/build/
+
+# ============================================================
+# Flutter / Dart / Pub
+# ============================================================
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Widget Preview related
+.widget_preview/
+
+# ============================================================
+# Android
+# ============================================================
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# IDE
+# ============================================================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+
+# IntelliJ / Android Studio
+.atom/
+
+# ============================================================
+# Swift / Xcode
+# ============================================================
+.swiftpm/
+**/xcuserdata/
+**/*.xcuserstate
+
+# ============================================================
+# Miscellaneous
+# ============================================================
+*.class
 *.pyc
 .venv/
+__pycache__/
+.build/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
 
-# Node
-node_modules/
+# ============================================================
+# Logs
+# ============================================================
+logs/
+*.log
 
-# Env files
-.env
-
-backend/ml-service/data/*.xlsx
+# ============================================================
+# Docker volumes
+# ============================================================
+postgres_data/
+mongo_data/
+redis_data/
