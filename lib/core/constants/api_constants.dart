@@ -9,7 +9,9 @@ class ApiConstants {
   /// 
   /// --- PRODUCTION CONSIDERATIONS ---
   /// * Replace with your production server URL (e.g. 'https://api.crednest.com')
-  static const String baseUrl = "https://api.creditdna.in"; // Replace with your backend URL (e.g., http://10.0.2.2:8000 for local testing)
+  // For local development with Setu/ngrok, replace this with your ngrok/localtunnel URL!
+  // Example: static const String baseUrl = "https://crednest-aa.loca.lt";
+  static const String baseUrl = "https://sharp-hats-swim.loca.lt";
 
   static const String login = "/auth/login";
   static const String signup = "/auth/signup";

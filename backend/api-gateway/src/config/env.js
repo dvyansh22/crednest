@@ -52,6 +52,7 @@ module.exports = {
     baseUrl: process.env.SETU_GST_BASE_URL || 'https://gst-sandbox.setu.co',
     clientId: process.env.SETU_GST_CLIENT_ID || '',
     clientSecret: process.env.SETU_GST_CLIENT_SECRET || '',
+    productInstanceId: process.env.SETU_GST_PRODUCT_INSTANCE_ID || '',
   },
 
   // Setu DigiLocker
@@ -59,6 +60,7 @@ module.exports = {
     baseUrl: process.env.SETU_DIGILOCKER_BASE_URL || 'https://dg-sandbox.setu.co',
     clientId: process.env.SETU_DIGILOCKER_CLIENT_ID || '',
     clientSecret: process.env.SETU_DIGILOCKER_CLIENT_SECRET || '',
+    productInstanceId: process.env.SETU_DIGILOCKER_PRODUCT_INSTANCE_ID || '',
   },
 
   // ML Service
