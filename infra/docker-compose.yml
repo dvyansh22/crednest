@@ -1,0 +1,36 @@
+services:
+  ml-service:
+    build:
+      context: ../backend/ml-service
+      dockerfile: Dockerfile
+    container_name: crednest-ml-service
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: "8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api-gateway:
+    build:
+      context: ../backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: crednest-api-gateway
+    depends_on:
+      ml-service:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      ML_SERVICE_URL: "http://ml-service:8001"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s

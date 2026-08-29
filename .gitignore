@@ -1,3 +1,9 @@
+# Data files (large, regenerate with training scripts)
+backend/ml-service/data/dataset/*.csv
+backend/ml-service/app/models/*.joblib
+backend/ml-service/app/models/*.csv
+backend/ml-service/data/*.xlsx
+
 # ============================================================
 # Node
 # ============================================================
@@ -83,6 +89,8 @@ Thumbs.db
 # ============================================================
 *.class
 *.pyc
+.venv/
+__pycache__/
 .build/
 .buildlog/
 .history

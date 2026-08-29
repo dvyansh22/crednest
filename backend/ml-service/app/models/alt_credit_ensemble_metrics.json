@@ -1,0 +1,14 @@
+{
+  "tier_distribution": {
+    "P1": 880,
+    "P2": 5040,
+    "P3": 1200,
+    "P4": 880
+  },
+  "quantile_thresholds": [
+    0.10253386844194351,
+    0.2067853947758558,
+    0.719015564540689
+  ],
+  "model_type": "isolation_forest_plus_xgb_plus_lstm"
+}

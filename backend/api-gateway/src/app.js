@@ -14,6 +14,7 @@ const quizRoutes       = require('./routes/quiz.routes');
 const ocenRoutes       = require('./routes/ocen.routes');
 const webhookRoutes    = require('./routes/webhooks.routes');
 const ledgerRoutes     = require('./routes/ledger.routes');
+const mlRoutes         = require('./routes/ml.routes');
 
 const app = express();
 
@@ -40,6 +41,9 @@ app.use('/v1/quiz',        quizRoutes);
 app.use('/v1/loans',       ocenRoutes);
 app.use('/v1/webhooks',    webhookRoutes);
 app.use('/v1/ledger',      ledgerRoutes);
+
+// ML Routes from ml-alt-credit-model branch
+app.use('/ml',             mlRoutes);
 
 // ─── 404 Handler ─────────────────────────────────────────────────────────────
 app.use((_req, res) => {
