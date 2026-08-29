@@ -1,66 +1,100 @@
-import 'package:dio/dio.dart';
-import '../../../../core/network/api_endpoints.dart';
-import '../../../../core/storage/secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 
 class AuthRepository {
-  final Dio dio;
-  final SecureStorage secureStorage;
+  final FirebaseAuth _firebaseAuth;
 
-  AuthRepository({required this.dio, required this.secureStorage});
+  AuthRepository({FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  /// Step 1: send OTP to a phone number
-  Future<void> sendOtp(String phone) async {
-    try {
-      await dio.post(ApiEndpoints.sendOtp, data: {'phone': phone});
-    } on DioException catch (e) {
-      throw Exception(_extractError(e));
-    }
-  }
-
-  /// Step 2: verify OTP, returns the logged-in user on success
-  Future<UserModel> verifyOtp({
-    required String phone,
-    required String otp,
+  Future<UserModel> signUp({
+    required String name,
+    required String email,
+    required String password,
   }) async {
     try {
-      final response = await dio.post(
-        ApiEndpoints.verifyOtp,
-        data: {'phone': phone, 'otp': otp},
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
 
-      final accessToken = response.data['accessToken'] as String;
-      final refreshToken = response.data['refreshToken'] as String;
+      await credential.user?.updateDisplayName(name);
 
-      await secureStorage.saveTokens(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+      return UserModel(
+        id: credential.user!.uid,
+        email: credential.user!.email,
+        name: name,
+        createdAt: DateTime.now(),
       );
-
-      return UserModel.fromJson(response.data['user']);
-    } on DioException catch (e) {
-      throw Exception(_extractError(e));
+    } on FirebaseAuthException catch (e) {
+      print('FIREBASE ERROR CODE: ${e.code}');
+      print('FIREBASE ERROR MESSAGE: ${e.message}');
+      throw Exception(_mapFirebaseError(e));
     }
   }
 
-  /// Fetch the current logged-in user (used on app restart to validate session)
-  Future<UserModel> getCurrentUser() async {
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
     try {
-      final response = await dio.get(ApiEndpoints.currentUser);
-      return UserModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw Exception(_extractError(e));
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return UserModel(
+        id: credential.user!.uid,
+        email: credential.user!.email,
+        name: credential.user!.displayName,
+        createdAt: credential.user!.metadata.creationTime ?? DateTime.now(),
+      );
+    } on FirebaseAuthException catch (e) {
+      print('FIREBASE ERROR CODE: ${e.code}');
+      print('FIREBASE ERROR MESSAGE: ${e.message}');
+      throw Exception(_mapFirebaseError(e));
     }
   }
 
   Future<void> logout() async {
-    await secureStorage.clearTokens();
+    await _firebaseAuth.signOut();
   }
 
-  String _extractError(DioException e) {
-    if (e.response?.data is Map && e.response?.data['message'] != null) {
-      return e.response!.data['message'] as String;
+  UserModel? getCurrentUser() {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return null;
+    return UserModel(
+      id: user.uid,
+      email: user.email,
+      name: user.displayName,
+      createdAt: user.metadata.creationTime ?? DateTime.now(),
+    );
+  }
+
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_mapFirebaseError(e));
     }
-    return 'Something went wrong. Please try again.';
+  }
+
+  String _mapFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'An account already exists with this email.';
+      case 'invalid-email':
+        return 'Please enter a valid email address.';
+      case 'weak-password':
+        return 'Password is too weak. Use at least 6 characters.';
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Incorrect email or password.';
+      case 'network-request-failed':
+        return 'No internet connection. Please check your Wi-Fi or cellular network.';
+      default:
+        return 'Something went wrong. Please try again.';
+    }
   }
 }

@@ -1,20 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/network/api_client.dart';
-import '../../../core/storage/secure_storage.dart';
 import '../data/models/user_model.dart';
 import '../data/repositories/auth_repository.dart';
 
-final apiClientProvider = Provider((ref) => ApiClient());
-final secureStorageProvider = Provider((ref) => SecureStorage());
+final authRepositoryProvider = Provider((ref) => AuthRepository());
 
-final authRepositoryProvider = Provider((ref) {
-  return AuthRepository(
-    dio: ref.watch(apiClientProvider).dio,
-    secureStorage: ref.watch(secureStorageProvider),
-  );
-});
-
-enum AuthStatus { initial, otpSent, loading, authenticated, error }
+enum AuthStatus { initial, loading, authenticated, error }
 
 class AuthState {
   final AuthStatus status;
@@ -38,6 +28,8 @@ class AuthState {
       errorMessage: errorMessage,
     );
   }
+
+  bool get isLoading => status == AuthStatus.loading;
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -45,28 +37,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   AuthNotifier(this.repository) : super(AuthState());
 
-  Future<void> sendOtp(String phone) async {
+  Future<void> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     state = state.copyWith(status: AuthStatus.loading);
     try {
-      await repository.sendOtp(phone);
-      state = state.copyWith(status: AuthStatus.otpSent);
-    } catch (e) {
-      state = state.copyWith(
-        status: AuthStatus.error,
-        errorMessage: e.toString(),
-      );
-    }
-  }
-
-  Future<void> verifyOtp({required String phone, required String otp}) async {
-    state = state.copyWith(status: AuthStatus.loading);
-    try {
-      final user = await repository.verifyOtp(phone: phone, otp: otp);
+      final user = await repository.signUp(name: name, email: email, password: password);
       state = state.copyWith(status: AuthStatus.authenticated, user: user);
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
-        errorMessage: e.toString(),
+        errorMessage: e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
+  Future<void> login({required String email, required String password}) async {
+    state = state.copyWith(status: AuthStatus.loading);
+    try {
+      final user = await repository.login(email: email, password: password);
+      state = state.copyWith(status: AuthStatus.authenticated, user: user);
+    } catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: e.toString().replaceFirst('Exception: ', ''),
       );
     }
   }
@@ -74,6 +70,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     await repository.logout();
     state = AuthState();
+  }
+
+  void checkSession() {
+    final user = repository.getCurrentUser();
+    if (user != null) {
+      state = state.copyWith(status: AuthStatus.authenticated, user: user);
+    } else {
+      state = state.copyWith(status: AuthStatus.initial);
+    }
+  }
+
+  Future<bool> forgotPassword({required String email}) async {
+    state = state.copyWith(status: AuthStatus.loading);
+    try {
+      await repository.forgotPassword(email: email);
+      state = state.copyWith(status: AuthStatus.initial);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: e.toString().replaceFirst('Exception: ', ''),
+      );
+      return false;
+    }
   }
 }
 

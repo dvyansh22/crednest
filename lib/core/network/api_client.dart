@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import '../config/env.dart';
 import '../storage/secure_storage.dart';
 import '../security/token_manager.dart';
+import '../constants/api_constants.dart';
 import 'api_interceptors.dart';
 
 class ApiClient {
@@ -10,7 +10,7 @@ class ApiClient {
   ApiClient()
       : dio = Dio(
     BaseOptions(
-      baseUrl: Env.baseUrl,
+      baseUrl: ApiConstants.baseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
     ),

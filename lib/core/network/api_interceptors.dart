@@ -21,9 +21,16 @@ class AuthInterceptor extends Interceptor {
       RequestOptions options,
       RequestInterceptorHandler handler,
       ) async {
-    final token = await secureStorage.getAccessToken();
-    if (token != null && !tokenManager.isExpired(token)) {
-      options.headers['Authorization'] = 'Bearer $token';
+    final path = options.path;
+    final isPublicRoute = path.contains(ApiEndpoints.login) ||
+        path.contains(ApiEndpoints.signup) ||
+        path.contains(ApiEndpoints.forgotPassword);
+
+    if (!isPublicRoute) {
+      final token = await secureStorage.getAccessToken();
+      if (token != null && !tokenManager.isExpired(token)) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
     }
     handler.next(options);
   }
@@ -51,8 +58,8 @@ class AuthInterceptor extends Interceptor {
           data: {'refreshToken': refreshToken},
         );
 
-        final newAccessToken = response.data['accessToken'] as String;
-        final newRefreshToken = response.data['refreshToken'] as String;
+        final newAccessToken = (response.data['access_token'] ?? response.data['accessToken']) as String;
+        final newRefreshToken = (response.data['refresh_token'] ?? response.data['refreshToken']) as String;
 
         await secureStorage.saveTokens(
           accessToken: newAccessToken,
