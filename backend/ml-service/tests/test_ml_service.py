@@ -83,10 +83,10 @@ def test_score_endpoint_uses_unsupervised_model_prediction():
     )
     assert response.status_code == 200, response.text
     payload = response.json()
-    assert "predicted_class" in payload
-    assert payload["predicted_class"] in {"P1", "P2", "P3", "P4"}
-    assert 0.0 <= payload["probability"] <= 1.0
-    assert 0 <= payload["credit_score"] <= 850
+    assert "risk_band" in payload
+    assert payload["risk_band"] in {"P1", "P2", "P3", "P4"}
+    assert 0.0 <= payload["confidence"] <= 1.0
+    assert 0 <= payload["score_value"] <= 850
 
 
 def test_narration_endpoint():

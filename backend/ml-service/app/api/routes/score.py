@@ -26,6 +26,7 @@ class ScoreRequest(BaseModel):
     bank_statement: Dict[str, Any] = Field(default_factory=dict)
     gst_data: Optional[Dict[str, Any]] = None
     quiz_responses: List[QuizResponse] = Field(default_factory=list)
+    location: Optional[Dict[str, float]] = None
     federated_delta: Optional[Dict[str, Any]] = None
     features: Dict[str, Any] = Field(default_factory=dict)
 
@@ -33,14 +34,17 @@ class ScoreRequest(BaseModel):
 class ScoreResponse(BaseModel):
     borrower_id: Optional[str] = None
     person_id: Optional[str] = None
-    credit_score: int
-    predicted_class: str
-    probability: float
+    score_value: int
+    risk_band: str
+    max_eligible_amount: int
+    confidence: float
+    npa_probability: float
+    npa_alert: Optional[str] = None
+    explanation: str
+    signal_contributions: List[Dict[str, Any]]
+    is_mock: bool = False
     confidence_band: List[int]
     stress_profile: Dict[str, Any]
-    character_narrative: str
-    signal_contributions: List[Dict[str, Any]]
-    npa_alert: Optional[str] = None
 
 
 def _calculate_psychometric_score(quiz_responses: List[QuizResponse]) -> Dict[str, Any]:
@@ -105,6 +109,22 @@ def score_borrower(payload: ScoreRequest):
     confidence_low = max(settings.min_score, int(model_prediction.get("score_band", [base_score, base_score])[0]))
     confidence_high = min(settings.max_score, int(model_prediction.get("score_band", [base_score, base_score])[1]))
 
+    npa_alert = None
+    npa_probability = 1.0 - float(model_prediction.get("probability", 0.5))
+    
+    if payload.location and "latitude" in payload.location and "longitude" in payload.location:
+        import math
+        lat = payload.location["latitude"]
+        lon = payload.location["longitude"]
+        hubs = [(28.61, 77.20), (19.07, 72.87), (12.97, 77.59), (22.90, 79.08), (26.84, 80.94)]
+        dist = min(math.sqrt((lat - h[0])**2 + (lon - h[1])**2) for h in hubs)
+        
+        if dist > 5.0:  # Far outside expected economic zones
+            npa_alert = "Fraud Risk: Suspicious Location Activity. Coordinates fall significantly outside expected operating bounds."
+            npa_probability = max(0.95, npa_probability)
+            base_score = min(base_score, 400) # Penalize score
+            model_prediction["predicted_class"] = "P4"
+
     signal_contributions = [
         {"signal": "risk_anomaly", "impact": f"{model_prediction.get('feature_importance', {}).get('anomaly_norm', 0.0):.2f}"},
         {"signal": "composite_risk", "impact": f"{model_prediction.get('feature_importance', {}).get('composite_risk', 0.0):.2f}"},
@@ -114,15 +134,18 @@ def score_borrower(payload: ScoreRequest):
     return {
         "borrower_id": borrower_id,
         "person_id": payload.person_id,
-        "credit_score": int(base_score),
-        "predicted_class": model_prediction.get("predicted_class", "P2"),
-        "probability": float(model_prediction.get("probability", 0.5)),
+        "score_value": int(base_score),
+        "risk_band": model_prediction.get("predicted_class", "P2"),
+        "max_eligible_amount": 100000 if base_score >= 720 else (50000 if base_score >= 580 else 25000),
+        "confidence": float(model_prediction.get("probability", 0.5)),
+        "npa_probability": npa_probability,
+        "npa_alert": npa_alert,
+        "explanation": f"Risk tier {model_prediction.get('predicted_class', 'P2')} generated from alternative-data anomaly and explainable composite risk over income regularity, GST discipline, and psychometric stability.",
+        "signal_contributions": signal_contributions,
+        "is_mock": False,
         "confidence_band": [int(confidence_low), int(confidence_high)],
         "stress_profile": {
             "adverse_income_score": max(settings.min_score, base_score - 40),
             "min_emi_floor": max(900, int((base_score / 100.0) * 22)),
-        },
-        "character_narrative": f"Risk tier {model_prediction.get('predicted_class', 'P2')} generated from alternative-data anomaly and explainable composite risk over income regularity, GST discipline, and psychometric stability.",
-        "signal_contributions": signal_contributions,
-        "npa_alert": None,
+        }
     }
