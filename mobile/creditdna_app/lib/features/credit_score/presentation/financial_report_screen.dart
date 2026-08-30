@@ -54,7 +54,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> {
               title: const Text('Privacy information'),
               onTap: () {
                 Navigator.of(context).pop();
-                context.push('/consent');
+                context.push('/connect-bank');
               },
             ),
             ListTile(
@@ -62,7 +62,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> {
               title: const Text('Data sources'),
               onTap: () {
                 Navigator.of(context).pop();
-                context.push('/consent');
+                context.push('/connect-bank');
               },
             ),
           ],

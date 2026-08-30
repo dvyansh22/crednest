@@ -69,7 +69,7 @@ class NextActionData {
       case NextActionType.completeAssessment:
         return '/psychometric-quiz';
       case NextActionType.renewConsent:
-        return '/consent';
+        return '/connect-bank';
     }
   }
 }

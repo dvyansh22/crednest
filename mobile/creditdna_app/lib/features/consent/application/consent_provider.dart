@@ -86,7 +86,15 @@ class ConsentNotifier extends StateNotifier<ConsentState> {
     }
   }
 
-  /// Marks a consent Inactive — called by flows that lose permission
+  Future<String> initiateBankConsent() async {
+    return _repository.initiateBankConsent();
+  }
+
+  Future<void> fetchBankData() async {
+    await _repository.fetchBankData();
+  }
+
+  /// Marks a consent Active — called by flows that lose permission
   /// (e.g. LocationNotifier when the user denies location access).
   Future<void> deactivateConsent(String id) async {
     if (state.consents.any((c) => c.id == id)) {

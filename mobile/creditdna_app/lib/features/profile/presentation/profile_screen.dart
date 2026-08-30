@@ -73,9 +73,9 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => context.push('/profile-setup'),
             ),
             _ProfileTile(
-              icon: Icons.shield_outlined,
-              title: 'Consent center',
-              onTap: () => context.push('/consent'),
+              icon: Icons.account_balance_outlined,
+              title: 'Connect bank',
+              onTap: () => context.push('/connect-bank'),
             ),
             _ProfileTile(
               icon: Icons.receipt_long_outlined,

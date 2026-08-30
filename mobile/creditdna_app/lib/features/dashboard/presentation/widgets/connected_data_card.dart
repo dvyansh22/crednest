@@ -22,7 +22,7 @@ class ConnectedDataCard extends StatelessWidget {
             ),
             const Spacer(),
             GestureDetector(
-              onTap: () => context.push('/consent'),
+              onTap: () => context.push('/connect-bank'),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

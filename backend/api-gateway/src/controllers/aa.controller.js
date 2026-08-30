@@ -11,7 +11,7 @@ async function initiateConsent(req, res, next) {
     const userId = req.user.id;
     const { fi_types = ['DEPOSIT'], date_range_from, date_range_to } = req.body;
 
-    const redirectUrl = `${CALLBACK_BASE}/v1/webhooks/aa/consent`;
+    const redirectUrl = `${CALLBACK_BASE}/v1/aa/callback`;
     const result = await aaClient.initiateConsent({
       userId,
       fiTypes: fi_types,
@@ -99,4 +99,14 @@ async function refreshData(req, res, next) {
   }
 }
 
-module.exports = { initiateConsent, fetchData, refreshData };
+// ─── GET /v1/aa/callback ───────────────────────────────────────────────────────
+async function handleCallback(req, res, next) {
+  try {
+    const queryStr = new URLSearchParams(req.query).toString();
+    return res.redirect(`crednest://aa-callback?${queryStr}`);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { initiateConsent, fetchData, refreshData, handleCallback };

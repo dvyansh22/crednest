@@ -10,7 +10,7 @@ class ConsentStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () => context.push('/consent'),
+      onTap: () => context.push('/connect-bank'),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
@@ -31,7 +31,7 @@ class ConsentStatusCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Consent status', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: AppColors.navy)),
+                  Text('Connect Bank', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: AppColors.navy)),
                   SizedBox(height: 3),
                   Text("You're in control of your data.", style: TextStyle(fontSize: 12.5, color: AppColors.subGrey)),
                   Text('Review and manage permissions anytime.', style: TextStyle(fontSize: 12.5, color: AppColors.subGrey)),

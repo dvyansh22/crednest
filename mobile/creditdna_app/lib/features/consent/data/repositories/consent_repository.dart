@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/network/api_client.dart';
 import '../models/consent_model.dart';
 
 /// Supplies consent data. No backend exists yet, so this returns demo data
@@ -13,6 +14,8 @@ class ConsentRepository {
   // (revoke, renew, activate) is still there the next time the Consent
   // Center is opened, instead of resetting to the demo baseline.
   List<ConsentModel>? _cachedConsents;
+  
+  final _apiClient = ApiClient();
 
   Future<List<ConsentModel>> getConsents() async {
     // TODO(backend): replace with GET /consents
@@ -32,6 +35,20 @@ class ConsentRepository {
     final newExpiry = DateTime.now().add(const Duration(days: 30));
     _mutate(id, (c) => c.copyWith(status: ConsentStatus.active, expiryDate: newExpiry));
     return newExpiry;
+  }
+  
+  Future<String> initiateBankConsent() async {
+    final response = await _apiClient.dio.post(
+      '/v1/aa/consent/initiate',
+      data: {
+        'fi_types': ['DEPOSIT'],
+      },
+    );
+    return response.data['redirectUrl'] as String;
+  }
+  
+  Future<void> fetchBankData() async {
+    await _apiClient.dio.post('/v1/aa/fetch');
   }
 
   /// Marks a consent Active — used once a consent-granting flow (e.g. the

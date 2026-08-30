@@ -6,7 +6,7 @@ import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/signup_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
-import '../features/consent/presentation/consent_center_screen.dart';
+
 import '../features/consent/presentation/consent_details_screen.dart';
 import '../features/consent/data/models/consent_model.dart';
 import '../features/kyc/presentation/kyc_screen.dart';
@@ -44,7 +44,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(path: '/forgot-password', builder: (context, state) => const ForgotPasswordScreen()),
-    GoRoute(path: '/consent', builder: (context, state) => const ConsentCenterScreen()),
+
     GoRoute(
       path: '/consent/:id',
       builder: (context, state) => ConsentDetailsScreen(

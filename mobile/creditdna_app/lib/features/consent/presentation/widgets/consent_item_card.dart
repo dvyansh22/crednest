@@ -33,16 +33,15 @@ class ConsentItemCard extends StatelessWidget {
   String get _actionLabel {
     switch (consent.status) {
       case ConsentStatus.active:
-        return 'Revoke';
+        return 'Disconnect';
       case ConsentStatus.expired:
-        return 'Renew Consent';
       case ConsentStatus.inactive:
       case ConsentStatus.revoked:
-        return 'Provide Consent';
+        return 'Connect';
     }
   }
 
-  Color get _actionColor => consent.status == ConsentStatus.active ? AppColors.errorRed : AppColors.green;
+  Color get _actionColor => consent.status == ConsentStatus.active ? AppColors.errorRed : AppColors.blue;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +82,6 @@ class ConsentItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: AppColors.subGrey),
               ],
             ),
             const SizedBox(height: 14),
@@ -109,12 +107,20 @@ class ConsentItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(width: 1, height: 14, color: AppColors.divider, margin: const EdgeInsets.symmetric(horizontal: 12)),
-                GestureDetector(
-                  onTap: onAction,
+                const SizedBox(width: 12),
+                TextButton(
+                  onPressed: onAction,
+                  style: TextButton.styleFrom(
+                    backgroundColor: _actionColor.withValues(alpha: 0.1),
+                    foregroundColor: _actionColor,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
                   child: Text(
                     _actionLabel,
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: _actionColor),
+                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
