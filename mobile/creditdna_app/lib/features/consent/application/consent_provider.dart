@@ -85,6 +85,20 @@ class ConsentNotifier extends StateNotifier<ConsentState> {
       );
     }
   }
+
+  /// Marks a consent Inactive — called by flows that lose permission
+  /// (e.g. LocationNotifier when the user denies location access).
+  Future<void> deactivateConsent(String id) async {
+    if (state.consents.any((c) => c.id == id)) {
+      state = ConsentState(
+        status: ConsentLoadStatus.loaded,
+        consents: [
+          for (final c in state.consents)
+            if (c.id == id) c.copyWith(status: ConsentStatus.inactive) else c,
+        ],
+      );
+    }
+  }
 }
 
 final consentProvider = StateNotifierProvider<ConsentNotifier, ConsentState>((ref) {
