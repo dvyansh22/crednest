@@ -26,7 +26,7 @@ class ScoreAggregator:
         gst_features = compute_gst_features(gst_data or {})
         cross_validation = cross_validate_gst_bank(gst_data or {}, bank_statement)
         psychometric = self.bert.predict(quiz_responses or [])
-        seasonal = self.lstm.predict([bank_features.get("monthly_inflow", 0), bank_features.get("monthly_outflow", 0)], sector_tag="general")
+        seasonal = self.lstm.predict(bank_features.get("monthly_inflow_series", []), sector_tag="general")
         npa = self.npa.predict({
             "salary_gap_days": max(0, int(bank_features.get("cash_flow_velocity", 1) * 10)),
             "gst_filing_gap_days": int(abs(gst_features.get("turnover_trend", 0)) * 2),

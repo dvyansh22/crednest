@@ -19,6 +19,7 @@ class XGBoostEngine:
     """
 
     def __init__(self, feature_weights: Dict[str, float] | None = None, model_path: str | Path | None = None):
+        print("XGBOOST ENGINE INIT CALLED")
         self.model_path = Path(model_path) if model_path else Path(__file__).resolve().parents[1] / "alt_credit_ensemble.joblib"
         self.artifact = self._load_artifact()
         self.iso_model = self.artifact.get("iso_model") if self.artifact else None
