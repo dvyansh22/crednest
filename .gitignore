@@ -16,6 +16,7 @@ npm-debug.log*
 # ============================================================
 .env
 !.env.example
+backend/ml-service/.venv/
 
 # ============================================================
 # Vault storage (contains encrypted PII data)
