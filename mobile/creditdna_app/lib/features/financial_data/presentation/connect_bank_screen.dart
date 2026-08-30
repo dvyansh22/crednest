@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../consent/application/consent_provider.dart';
@@ -25,51 +24,41 @@ class _ConnectBankScreenState extends ConsumerState<ConnectBankScreen> {
   }
 
   Future<void> _handleAction(ConsentModel consent) async {
-    if (consent.id == 'financial-data' && consent.status != ConsentStatus.active) {
-      try {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Starting secure connection...')));
-        
-        final redirectUrl = await ref.read(consentProvider.notifier).initiateBankConsent();
-        
-        final result = await FlutterWebAuth2.authenticate(
-          url: redirectUrl,
-          callbackUrlScheme: 'crednest',
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fetching data securely...')));
-        await ref.read(consentProvider.notifier).fetchBankData();
-        
-        await ref.read(consentProvider.notifier).activateConsent(
-          consent.id, 
-          expiryDate: DateTime.now().add(const Duration(days: 90))
-        );
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bank connected successfully!')));
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error connecting bank: $e')));
-        }
+    if (consent.status == ConsentStatus.inactive || consent.status == ConsentStatus.revoked) {
+      await _showConsentModal(consent);
+      return;
+    }
+    if (consent.status == ConsentStatus.active) {
+      final confirmed = await showRevokeConsentDialog(context, consentTitle: consent.title);
+      if (confirmed) {
+        await ref.read(consentProvider.notifier).revokeConsent(consent.id);
       }
       return;
     }
+    if (consent.status == ConsentStatus.expired) {
+      await ref.read(consentProvider.notifier).renewConsent(consent.id);
+    }
+  }
 
-    switch (consent.status) {
-      case ConsentStatus.active:
-        final confirmed = await showRevokeConsentDialog(context, consentTitle: consent.title);
-        if (confirmed) {
-          await ref.read(consentProvider.notifier).revokeConsent(consent.id);
-        }
-        break;
-      case ConsentStatus.expired:
-        await ref.read(consentProvider.notifier).renewConsent(consent.id);
-        break;
-      case ConsentStatus.inactive:
-      case ConsentStatus.revoked:
-        if (mounted) context.push(consent.actionRoute);
-        break;
+  Future<void> _showConsentModal(ConsentModel consent) async {
+    // Show a simple modal to simulate the connection
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _ConsentSuccessSheet(consent: consent),
+    );
+
+    if (confirmed == true && mounted) {
+      await ref.read(consentProvider.notifier).activateConsent(
+        consent.id,
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${consent.title} connected successfully! 🎉')),
+        );
+      }
     }
   }
 
@@ -340,6 +329,74 @@ class _ConsentEmptyState extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Explore Data Connections', style: TextStyle(fontWeight: FontWeight.w700)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ConsentSuccessSheet extends StatelessWidget {
+  final ConsentModel consent;
+
+  const _ConsentSuccessSheet({required this.consent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: consent.accentColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(consent.icon, size: 40, color: consent.accentColor),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Connect ${consent.title}',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.navy),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              consent.whyWeNeedThis,
+              style: const TextStyle(fontSize: 14, color: AppColors.subGrey, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: consent.accentColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                ),
+                child: const Text('Connect Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.subGrey)),
+              ),
             ),
           ],
         ),

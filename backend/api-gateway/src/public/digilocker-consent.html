@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DigiLocker — Identity Verified</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #eff6ff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #fff; border-radius: 24px; padding: 40px 28px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(29,78,216,.15); }
+    .icon { width: 80px; height: 80px; background: linear-gradient(135deg, #1d4ed8, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+    .icon svg { width: 40px; height: 40px; fill: #fff; }
+    h1 { font-size: 22px; font-weight: 800; color: #1e3a5f; margin-bottom: 8px; }
+    p { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 8px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; color: #16a34a; margin-bottom: 28px; }
+    .btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 4px 16px rgba(29,78,216,.35); }
+    .setu-tag { font-size: 11px; color: #9ca3af; margin-top: 16px; }
+    .setu-tag strong { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    </div>
+    <h1>Identity Verified</h1>
+    <p>Your Aadhaar-linked identity has been securely verified with CredNest via DigiLocker.</p>
+    <div class="badge">✓ &nbsp;KYC Complete</div>
+    <button class="btn" onclick="done()">Continue to App</button>
+    <div class="setu-tag">Powered by <strong>DigiLocker</strong> &middot; MeitY, Govt. of India</div>
+  </div>
+  <script>
+    function done() {
+      const cb = new URLSearchParams(window.location.search).get('callback') || 'crednest://aa-callback';
+      window.location.href = cb + '?status=SUCCESS&source=digilocker&consent=GRANTED';
+    }
+    setTimeout(done, 3000);
+  </script>
+</body>
+</html>
