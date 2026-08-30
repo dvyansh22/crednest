@@ -104,3 +104,37 @@ def test_narration_endpoint():
     payload = response.json()
     assert len(payload["classified"]) == 2
     assert payload["monthly_gig_income_summary"]["total"] > 0
+
+
+def test_score_endpoint_geohash_stability_and_aggregator():
+    client = TestClient(app)
+    response = client.post(
+        "/v1/score",
+        json={
+            "person_id": "P-1002",
+            "bank_statement": {
+                "transactions": [
+                    {"date": "2026-01-01", "amount": 45000, "type": "credit", "narration": "SALARY CREDIT"},
+                ]
+            },
+            "geohash_stability": 0.9,
+            "quiz_responses": [
+                {"question_id": "Q03", "answer": 4},
+                {"question_id": "Q11", "answer": 1},
+            ]
+        },
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert "risk_band" in payload
+    assert payload["is_mock"] is False
+    assert 300 <= payload["score_value"] <= 850
+
+
+def test_npa_early_warning_logistic_function():
+    from app.models.npa_early_warning.npa_early_warning import NPAEarlyWarningModel
+    model = NPAEarlyWarningModel()
+    result = model.predict({"salary_gap_days": 120, "gst_filing_gap_days": 60})
+    assert "alert" in result
+    assert 0.0 <= result["risk_probability"] <= 1.0
+

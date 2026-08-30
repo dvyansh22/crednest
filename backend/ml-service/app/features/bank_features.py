@@ -56,6 +56,7 @@ def compute_bank_features(bank_statement: Dict[str, Any]) -> Dict[str, Any]:
     cash_withdrawals = 0.0
     upi_debits = 0.0
     income_dates = []
+    monthly_inflow_by_month = defaultdict(float)
 
     for txn in transactions:
         amount = _safe_float(txn.get("amount"), 0.0)
@@ -70,6 +71,7 @@ def compute_bank_features(bank_statement: Dict[str, Any]) -> Dict[str, Any]:
             credits.append(amount)
             if date:
                 income_dates.append(date)
+                monthly_inflow_by_month[date.strftime("%Y-%m")] += abs(amount)
             source = _match_gig_source(str(txn.get("narration", "")))
             if source != "Other Income":
                 gig_income += abs(amount)
@@ -113,6 +115,7 @@ def compute_bank_features(bank_statement: Dict[str, Any]) -> Dict[str, Any]:
         "cash_flow_velocity": (monthly_inflow / max(1.0, monthly_outflow)) if monthly_outflow else 1.0,
         "monthly_inflow": monthly_inflow,
         "monthly_outflow": monthly_outflow,
+        "monthly_inflow_series": [monthly_inflow_by_month[month] for month in sorted(monthly_inflow_by_month)],
         "avg_monthly_inflow": avg_monthly_inflow,
         "avg_monthly_outflow": avg_monthly_outflow,
         "income_regularity_score": round(regularity, 2),
