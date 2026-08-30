@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../location/application/location_provider.dart';
 import '../application/consent_provider.dart';
 import '../data/models/consent_model.dart';
 import 'widgets/consent_item_card.dart';
 import 'widgets/consent_summary_card.dart';
+import 'widgets/location_consent_card.dart';
 import 'widgets/revoke_consent_dialog.dart';
 
 class ConsentCenterScreen extends ConsumerStatefulWidget {
@@ -20,7 +22,12 @@ class _ConsentCenterScreenState extends ConsumerState<ConsentCenterScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => ref.read(consentProvider.notifier).loadConsents());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(consentProvider.notifier).loadConsents();
+      // Reflects real, current permission/location state whenever the
+      // Consent Center is opened — not just right after login.
+      ref.read(locationProvider.notifier).checkPermissionState();
+    });
   }
 
   Future<void> _handleAction(ConsentModel consent) async {
@@ -77,6 +84,7 @@ class _ConsentCenterScreenState extends ConsumerState<ConsentCenterScreen> {
         }
         return _ConsentList(
           state: state,
+          ref: ref,
           onItemTap: _openDetails,
           onItemAction: _handleAction,
         );
@@ -132,13 +140,17 @@ class _ConsentCenterHeader extends StatelessWidget {
 
 class _ConsentList extends StatelessWidget {
   final ConsentState state;
+  final WidgetRef ref;
   final ValueChanged<ConsentModel> onItemTap;
   final ValueChanged<ConsentModel> onItemAction;
 
-  const _ConsentList({required this.state, required this.onItemTap, required this.onItemAction});
+  const _ConsentList({required this.state, required this.ref, required this.onItemTap, required this.onItemAction});
 
   @override
   Widget build(BuildContext context) {
+    final locationState = ref.watch(locationProvider);
+    final locationNotifier = ref.read(locationProvider.notifier);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
       child: Column(
@@ -154,11 +166,22 @@ class _ConsentList extends StatelessWidget {
           const Text('Your Consents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.navy)),
           const SizedBox(height: 12),
           for (final consent in state.consents) ...[
-            ConsentItemCard(
-              consent: consent,
-              onTap: () => onItemTap(consent),
-              onAction: () => onItemAction(consent),
-            ),
+            if (consent.id == 'location-data')
+              LocationConsentCard(
+                consent: consent,
+                locationState: locationState,
+                onEnable: locationNotifier.requestPermission,
+                onRefresh: locationNotifier.refreshLocation,
+                onOpenAppSettings: locationNotifier.openAppSettings,
+                onOpenLocationSettings: locationNotifier.openLocationSettings,
+                onManage: locationNotifier.disableLocation,
+              )
+            else
+              ConsentItemCard(
+                consent: consent,
+                onTap: () => onItemTap(consent),
+                onAction: () => onItemAction(consent),
+              ),
             const SizedBox(height: 12),
           ],
           const SizedBox(height: 8),

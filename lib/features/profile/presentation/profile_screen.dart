@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../location/application/location_provider.dart';
 import '../data/models/user_profile_model.dart';
 import '../providers/user_profile_provider.dart';
 
@@ -90,6 +91,7 @@ class ProfileScreen extends ConsumerWidget {
               textColor: AppColors.errorRed,
               onTap: () {
                 ref.read(userProfileProvider.notifier).reset();
+                ref.read(locationProvider.notifier).reset();
                 ref.read(authProvider.notifier).logout();
               },
             ),

@@ -85,6 +85,36 @@ class ConsentNotifier extends StateNotifier<ConsentState> {
       );
     }
   }
+
+  /// Marks a consent inactive without the revoke-confirmation flow — used
+  /// when an OS-level permission is denied, or an app-level toggle (e.g.
+  /// Location) is turned off directly.
+  Future<void> deactivateConsent(String id) async {
+    await _repository.deactivateConsent(id);
+    if (state.consents.any((c) => c.id == id)) {
+      state = ConsentState(
+        status: ConsentLoadStatus.loaded,
+        consents: [
+          for (final c in state.consents)
+            if (c.id == id)
+              ConsentModel(
+                id: c.id,
+                title: c.title,
+                purpose: c.purpose,
+                status: ConsentStatus.inactive,
+                icon: c.icon,
+                accentColor: c.accentColor,
+                actionRoute: c.actionRoute,
+                whyWeNeedThis: c.whyWeNeedThis,
+                dataRequested: c.dataRequested,
+                dataNeverAccessed: c.dataNeverAccessed,
+              )
+            else
+              c,
+        ],
+      );
+    }
+  }
 }
 
 final consentProvider = StateNotifierProvider<ConsentNotifier, ConsentState>((ref) {

@@ -46,7 +46,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (mounted) {
       final state = ref.read(authProvider);
       if (state.status == AuthStatus.authenticated) {
-        await navigateAfterAuthentication(context, ref);
+        await navigateAfterAuthentication(context, ref, isFreshAuth: true);
       } else if (state.status == AuthStatus.initial) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

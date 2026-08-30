@@ -99,11 +99,16 @@ class ConnectedDataItem {
   final ConnectionStatus status;
   final String route;
 
+  /// Optional second line under the title — e.g. the resolved city/state
+  /// for the Location row. Null for items that don't need one.
+  final String? subtitle;
+
   const ConnectedDataItem({
     required this.title,
     required this.icon,
     required this.status,
     required this.route,
+    this.subtitle,
   });
 }
 

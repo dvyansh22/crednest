@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (mounted) {
       final state = ref.read(authProvider);
       if (state.status == AuthStatus.authenticated) {
-        await navigateAfterAuthentication(context, ref);
+        await navigateAfterAuthentication(context, ref, isFreshAuth: true);
       }
     }
   }

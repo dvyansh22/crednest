@@ -45,6 +45,25 @@ class ConsentRepository {
     _mutate(id, (c) => c.copyWith(status: ConsentStatus.active, expiryDate: expiryDate));
   }
 
+  /// Marks a consent inactive — used when a permission is denied or the
+  /// user turns off an app-level toggle (e.g. Location) without an
+  /// explicit revoke confirmation flow.
+  Future<void> deactivateConsent(String id) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _mutate(id, (c) => ConsentModel(
+          id: c.id,
+          title: c.title,
+          purpose: c.purpose,
+          status: ConsentStatus.inactive,
+          icon: c.icon,
+          accentColor: c.accentColor,
+          actionRoute: c.actionRoute,
+          whyWeNeedThis: c.whyWeNeedThis,
+          dataRequested: c.dataRequested,
+          dataNeverAccessed: c.dataNeverAccessed,
+        ));
+  }
+
   void _mutate(String id, ConsentModel Function(ConsentModel) update) {
     final current = _cachedConsents ?? _demoConsents();
     _cachedConsents = [
@@ -96,11 +115,13 @@ class ConsentRepository {
         dataNeverAccessed: const ['Aadhaar number storage', 'Full ID document copies'],
       ),
       ConsentModel(
+        // Starts inactive — this becomes Active only once the device
+        // actually grants location permission and a real position is
+        // resolved (see LocationNotifier). Never fake this as active.
         id: 'location-data',
         title: 'Location Data',
-        purpose: 'Fraud Prevention',
-        status: ConsentStatus.active,
-        expiryDate: now.add(const Duration(days: 15)),
+        purpose: 'Location Verification & Fraud Prevention',
+        status: ConsentStatus.inactive,
         icon: Icons.location_on_outlined,
         accentColor: AppColors.purple,
         actionRoute: '/location-consent',
